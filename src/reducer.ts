@@ -1,39 +1,58 @@
-import { Loop, liftState } from 'redux-loop';
-import { compose } from 'redux';
-import { Actions } from './types/actions.type';
+import { Picture } from './types/picture.type';
 
-export type State = unknown; // TODO : Update this type !
+type Increment = { type: 'INCREMENT' };
+type Decrement = { type: 'DECREMENT' };
 
-export const defaultState = {}; // TODO : Update this value !
+const increment = (): Increment => ({ type: 'INCREMENT' });
+const decrement = (): Decrement => ({ type: 'DECREMENT' });
 
-export const reducer = (state: State | undefined, action: Actions): State | Loop<State> => {
+type Actions = Increment | Decrement;
+
+export type State = {
+  counter: number;
+  pictures: Picture[];
+  selectedPicture: Picture | null;
+};
+
+export const defaultState: State = {
+  counter: 0,
+  pictures: [],
+  selectedPicture: null,
+};
+
+const reducer = (state: State | undefined, action: Actions): State => {
   if (!state) return defaultState; // mandatory by redux
   switch (action.type) {
     case 'INCREMENT':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        counter: state.counter + 1,
+        pictures: state.pictures.slice(0, state.counter + 1),
+      };
     case 'DECREMENT':
-      throw 'Not Implemented';
-    case 'SELECT_PICTURE':
-      throw 'Not Implemented';
-    case 'CLOSE_MODAL':
-      throw 'Not Implemented';
-    case 'FETCH_CATS_REQUEST':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        counter: state.counter - 1,
+        pictures: state.pictures.slice(0, state.counter - 1),
+      };
     case 'FETCH_CATS_COMMIT':
-      throw 'Not Implemented';
-    case 'FETCH_CATS_ROLLBACK':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        pictures: action.payload,
+      };
+    case 'SELECT_PICTURE':
+      return {
+        ...state,
+        selectedPicture: action.payload,
+      };
+    case 'CLOSE_MODAL':
+      return {
+        ...state,
+        selectedPicture: null,
+      };
+    default:
+      return state;
   }
 };
 
-export const counterSelector = (state: State) => {
-  throw 'Not Implemented';
-};
-export const picturesSelector = (state: State) => {
-  throw 'Not Implemented';
-};
-export const getSelectedPicture = (state: State) => {
-  throw 'Not Implemented';
-};
-
-export default compose(liftState, reducer);
+export { increment, decrement, reducer };
