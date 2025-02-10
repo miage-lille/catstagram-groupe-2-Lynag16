@@ -1,6 +1,6 @@
 export type Picture = {
   previewFormat: string;
-  webFormat: string;
+  webformatFormat: string;
   author: string;
   largeFormat: string;
 };
