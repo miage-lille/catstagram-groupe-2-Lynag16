@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectPicture } from '../actions';
-import { Picture } from '../types/picture.type';
 import ModalPortal from './modal';
+import { picturesSelector, selectedPictureSelector } from '../reducer'; 
+import { Picture } from '../types/picture.type';
+import { selectPicture, closeModal } from '../actions';
 
 const Container = styled.div`
   padding: 1rem;
@@ -22,27 +23,33 @@ const Image = styled.img`
   }
 `;
 
-const picturesSelector = (state: { pictures: Picture[] }) => state.pictures;
-const selectedPictureSelector = (state: { selectedPicture: Picture | null }) => state.selectedPicture;
-
 const Pictures = () => {
   const pictures = useSelector(picturesSelector);
-  const selectedPicture = useSelector(selectedPictureSelector);
+  const selectedPicture = useSelector(selectedPictureSelector); 
   const dispatch = useDispatch();
+
+  if (pictures.status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (pictures.status === 'failure') {
+    return <div>Error: {pictures.error}</div>;
+  }
 
   return (
     <Container>
-      {pictures.map((picture) => (
+      {pictures.data.map((picture: Picture) => (
         <Image
           key={picture.previewFormat}
           src={picture.previewFormat}
-          onClick={() => dispatch(selectPicture(picture))}
+          alt={picture.author}
+          onClick={() => dispatch(selectPicture(picture))} 
         />
       ))}
       {selectedPicture && (
         <ModalPortal
-          largeFormat={selectedPicture.largeFormat}
-          close={() => dispatch(closeModal())}
+          largeFormat={selectedPicture.largeFormat} 
+          close={() => dispatch(closeModal())} 
         />
       )}
     </Container>
@@ -50,3 +57,5 @@ const Pictures = () => {
 };
 
 export default Pictures;
+
+

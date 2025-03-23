@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { increment, decrement } from '../reducer';
+import { increment, decrement } from '../actions';
+import { counterSelector } from '../reducer';
 
 const Container = styled.div`
   padding: 16px;
@@ -34,7 +35,6 @@ const DisplayCounter = styled.span`
   color: darkgrey;
 `;
 
-const counterSelector = (state: { counter: number }): number => state.counter;
 
 const Counter = () => {
   const counter = useSelector(counterSelector);
@@ -50,3 +50,9 @@ const Counter = () => {
 
 
 export default Counter;
+
+
+
+
+
+

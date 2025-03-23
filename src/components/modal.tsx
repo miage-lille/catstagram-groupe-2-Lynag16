@@ -1,34 +1,37 @@
 import styled from 'styled-components';
 import ReactDOM from 'react-dom';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const Container = styled.div`
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 50px; /* Location of the box */
-  left: 0;
+  position: fixed;
+  z-index: 1000;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
 `;
 
 const Button = styled.button`
   position: absolute;
   top: 15px;
   right: 35px;
-  color: black;
-  font-size: 40px;
+  color: white;
+  background: transparent;
+  border: none;
+  font-size: 30px;
   font-weight: bold;
+  cursor: pointer;
 `;
 
 const Image = styled.img`
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
 
 interface ModalProps {
@@ -37,17 +40,38 @@ interface ModalProps {
 }
 
 const Modal = ({ largeFormat, close }: ModalProps) => {
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        close();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [close]);
+
   return (
     <Container>
-      <Image src={largeFormat} />
-      <Button onClick={close}>X</Button>
+      <Image src={largeFormat} alt="Large format" />
+      <Button onClick={close} aria-label="Close modal">
+        &times;
+      </Button>
     </Container>
   );
 };
 
-const portalRoot = document.getElementById('modal');
+const portalRoot = document.getElementById('modal-root'); 
+const ModalPortal = ({ largeFormat, close }: ModalProps) => {
+  if (!portalRoot) {
+    console.error('Modal root element not found. Please ensure an element with id "modal-root" exists in your HTML.');
+    return null;
+  }
 
-const ModalPortal = ({ largeFormat, close }: ModalProps) =>
-  portalRoot ? ReactDOM.createPortal(<Modal largeFormat={largeFormat} close={close} />, portalRoot) : null;
+  return ReactDOM.createPortal(<Modal largeFormat={largeFormat} close={close} />, portalRoot);
+};
 
 export default ModalPortal;
